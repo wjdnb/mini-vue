@@ -21,4 +21,45 @@ describe("effect", () => {
     user.age++;
     expect(nextAge).toBe(12);
   });
+
+  it("runner", () => {
+    // effect 调用后的返回值是一个函数，调用后可以执行这个传入的 fn。并获取这个函数的返回值。
+    let count = 10;
+    let fn = effect(() => {
+      count++;
+      return "here";
+    });
+
+    expect(count).toBe(11);
+    const test = fn();
+    expect(count).toBe(12);
+    expect(test).toBe("here");
+  });
+
+  // 新增 scheduler，首次不执行，后续每次都执行 scheduler
+  it("scheduler", () => {
+    let dummy;
+    let run: any;
+    const scheduler = jest.fn(() => {
+      run = runner;
+    });
+    const obj = reactive({ foo: 1 });
+    const runner = effect(
+      () => {
+        dummy = obj.foo;
+      },
+      { scheduler }
+    );
+    expect(scheduler).not.toHaveBeenCalled();
+    expect(dummy).toBe(1);
+    // should be called on first trigger
+    obj.foo++;
+    expect(scheduler).toHaveBeenCalledTimes(1);
+    // // should not run yet
+    expect(dummy).toBe(1);
+    // // manually run
+    run();
+    // // should have run
+    expect(dummy).toBe(2);
+  });
 });
