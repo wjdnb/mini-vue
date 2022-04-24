@@ -22,18 +22,19 @@ describe("effect", () => {
     expect(nextAge).toBe(12);
   });
 
-  it("runner", () => {
-    // effect 调用后的返回值是一个函数，调用后可以执行这个传入的 fn。并获取这个函数的返回值。
-    let count = 10;
-    let fn = effect(() => {
-      count++;
-      return "here";
+  it("should return runner when call effect", () => {
+    // 当调用 runner 的时候可以重新执行 effect.run
+    // runner 的返回值就是用户给的 fn 的返回值
+    let foo = 0;
+    const runner = effect(() => {
+      foo++;
+      return foo;
     });
 
-    expect(count).toBe(11);
-    const test = fn();
-    expect(count).toBe(12);
-    expect(test).toBe("here");
+    expect(foo).toBe(1);
+    runner();
+    expect(foo).toBe(2);
+    expect(runner()).toBe(3);
   });
 
   // 新增 scheduler，首次不执行，后续每次都执行 scheduler
@@ -74,7 +75,6 @@ describe("effect", () => {
     stop(runner);
     obj.prop = 3;
     expect(dummy).toBe(2);
-
     // stopped effect should still be manually callable
     runner();
     expect(dummy).toBe(3);
@@ -87,6 +87,6 @@ describe("effect", () => {
     });
 
     stop(runner);
-    expect(onStop).toHaveBeenCalled();
+    expect(onStop).toBeCalledTimes(1);
   });
 });

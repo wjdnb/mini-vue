@@ -1,26 +1,66 @@
-import { mutableHandlers, readonlyHandlers } from "./baseHandlers";
+import { track, trigger } from "./effect";
+import { isObject } from "./shared";
 
-export enum ReactiveFlags {
-  IS_REACTIVE = "__v_isReactive",
+export const enum Flags {
   IS_READONLY = "__v_isReadonly",
+  IS_REACTIVE = "__v_isReactive",
 }
 
 export function reactive(raw) {
-  return createActiveObject(raw, mutableHandlers);
+  return new Proxy(raw, {
+    get(target, key, receiver) {
+      const res = Reflect.get(target, key, receiver);
+
+      if (key === Flags.IS_REACTIVE) {
+        return true;
+      } else if (key === Flags.IS_READONLY) {
+        return false;
+      }
+
+      if (isObject(res)) {
+        return reactive(res);
+      }
+
+      track(target, key);
+      return res;
+    },
+
+    set(target, key, value, receiver) {
+      const res = Reflect.set(target, key, value, receiver);
+      trigger(target, key);
+      return res;
+    },
+  });
 }
 
 export function readonly(raw) {
-  return createActiveObject(raw, readonlyHandlers);
-}
+  return new Proxy(raw, {
+    get(target, key, receiver) {
+      const res = Reflect.get(target, key, receiver);
 
-function createActiveObject(raw, baseHandlers) {
-  return new Proxy(raw, baseHandlers);
-}
+      if (key === Flags.IS_REACTIVE) {
+        return false;
+      } else if (key === Flags.IS_READONLY) {
+        return true;
+      }
 
-export function isReactive(value) {
-  return !!value[ReactiveFlags.IS_REACTIVE];
+      if (isObject(res)) {
+        return readonly(res);
+      }
+
+      return res;
+    },
+    set(target, key, value, receiver) {
+      console.warn("error");
+      return true;
+    },
+  });
 }
 
 export function isReadonly(value) {
-  return !!value[ReactiveFlags.IS_READONLY];
+  return !!value[Flags.IS_READONLY];
+}
+
+export function isReactive(value) {
+  return !!value[Flags.IS_REACTIVE];
 }
