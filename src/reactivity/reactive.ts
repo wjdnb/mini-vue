@@ -61,6 +61,31 @@ export function isReadonly(value) {
   return !!value[Flags.IS_READONLY];
 }
 
+export function shallowReadonly(raw) {
+  return new Proxy(raw, {
+    get(target, key, receiver) {
+      const res = Reflect.get(target, key, receiver);
+
+      if (key === Flags.IS_REACTIVE) {
+        return false;
+      } else if (key === Flags.IS_READONLY) {
+        return true;
+      }
+
+      return res;
+    },
+    set() {
+      console.warn("can not read");
+      return true;
+    },
+  });
+  // 第一层是 reactive 内部层级不是
+}
+
 export function isReactive(value) {
   return !!value[Flags.IS_REACTIVE];
+}
+
+export function isProxy(value) {
+  return isReactive(value) || isReadonly(value);
 }
