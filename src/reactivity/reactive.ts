@@ -1,20 +1,26 @@
-import { track, trigger } from "./effect";
+import { mutableHandlers, readonlyHandlers } from "./baseHandlers";
 
-// 1. 每次访问的时候把访问的依赖收集起来
-// 2. 赋值的时候执行所有依赖
+export enum ReactiveFlags {
+  IS_REACTIVE = "__v_isReactive",
+  IS_READONLY = "__v_isReadonly",
+}
 
 export function reactive(raw) {
-  return new Proxy(raw, {
-    get(target, key, receiver) {
-      const res = Reflect.get(target, key, receiver);
-      track(target, key);
-      return res;
-    },
+  return createActiveObject(raw, mutableHandlers);
+}
 
-    set(target, key, value, receiver) {
-      const res = Reflect.set(target, key, value, receiver);
-      trigger(target, key);
-      return res;
-    },
-  });
+export function readonly(raw) {
+  return createActiveObject(raw, readonlyHandlers);
+}
+
+function createActiveObject(raw, baseHandlers) {
+  return new Proxy(raw, baseHandlers);
+}
+
+export function isReactive(value) {
+  return !!value[ReactiveFlags.IS_REACTIVE];
+}
+
+export function isReadonly(value) {
+  return !!value[ReactiveFlags.IS_READONLY];
 }
