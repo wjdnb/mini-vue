@@ -2,17 +2,17 @@ import { computed } from "../computed";
 import { reactive } from "../reactive";
 
 describe("computed", () => {
-  it("happy path", () => {
-    const user = reactive({
-      age: 1,
-    });
+  // it("happy path", () => {
+  //   const user = reactive({
+  //     age: 1,
+  //   });
 
-    const age = computed(() => {
-      return user.age;
-    });
+  //   const age = computed(() => {
+  //     return user.age;
+  //   });
 
-    expect(age.value).toBe(1);
-  });
+  //   expect(age.value).toBe(1);
+  // });
 
   it("should compute lazily", () => {
     const value = reactive({

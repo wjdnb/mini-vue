@@ -3,12 +3,12 @@ import { extend } from "./shared";
 const targetMap = new Map();
 let activeEffect;
 
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: any;
   deps = [];
   active = true;
   onStop?: () => void;
-  public scheduler: Function | undefined;
+  scheduler: Function | undefined;
 
   constructor(fn, scheduler?: Function) {
     this._fn = fn;
