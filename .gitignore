@@ -2,3 +2,4 @@ node_modules
 example
 lib
 .DS_Store
+.vscode
