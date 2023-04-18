@@ -68,6 +68,7 @@ export function track(target, key) {
 
 export function trackEffects(dep) {
   // 看看 dep 之前有没有添加过，添加过的话 那么就不添加了
+
   if (dep.has(activeEffect)) return;
 
   dep.add(activeEffect);

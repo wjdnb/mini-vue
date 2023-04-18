@@ -50,7 +50,6 @@ export function unRef(ref) {
 }
 
 export function proxyRefs(objectWithRefs) {
-  // 如果有 ref 处理 ref，没有 ref 就正常使用
   return new Proxy(objectWithRefs, {
     get(target, key) {
       return unRef(Reflect.get(target, key));
