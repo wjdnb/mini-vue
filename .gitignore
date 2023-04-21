@@ -1,5 +1,6 @@
 node_modules
-example
+example/**
+!example/patchTest
 lib
 .DS_Store
 .vscode
