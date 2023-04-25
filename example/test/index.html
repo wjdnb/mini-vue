@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let el = document.createElement("h1");
+      el.textContent = "here";
+      el.addEventListener("mousemove", () => {
+        console.log("here");
+      });
+      document.body.appendChild(el);
+      // document.body.innerHTML = "";
+      document.body.removeChild(el);
+      document.body.appendChild(el);
+    </script>
+  </body>
+</html>
